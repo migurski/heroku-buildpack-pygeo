@@ -215,7 +215,19 @@ if [ ! -d $CACHE_DIR/proj ]; then
   echo "Proj installed in $CACHE_DIR" | indent
 fi
 
+# Install GDAL
+if [ ! -d $CACHE_DIR/gdal ]; then
+  puts-step "Fetching and installing GDAL 1.10.1"
+  curl -o gdal.tgz -L http://s3.amazonaws.com/fuckfuckfuck/gdal-1.10.1-heroku.tar.gz >/dev/null 2>&1
+  echo "Installing ..." | indent
+  tar -C $CACHE_DIR -xzvf gdal.tgz >/dev/null 2>&1
+  rm gdal.tgz
+  echo "GDAL installed in $CACHE_DIR" | indent
+fi
+
+puts-step "Copying libraries from $CACHE_DIR to /app"
 cp -r $CACHE_DIR/proj /app/proj
+cp -r $CACHE_DIR/gdal /app/gdal
 
 # Install dependencies with Pip.
 puts-step "Installing dependencies using Pip ($PIP_VERSION)"
