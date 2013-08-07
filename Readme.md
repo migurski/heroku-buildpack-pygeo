@@ -3,7 +3,7 @@ Heroku buildpack: Python
 
 This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpacks) for Python apps, powered by [pip](http://www.pip-installer.org/).
 
-[![Build Status](https://secure.travis-ci.org/heroku/heroku-buildpack-python.png?branch=master)](http://travis-ci.org/heroku/heroku-buildpack-python)
+It has been modified from the [Heroku original](https://github.com/heroku/heroku-buildpack-python) to add precompiled binaries for [Proj.4](http://trac.osgeo.org/proj/) and [GDAL](http://trac.osgeo.org/gdal/).
 
 Usage
 -----
@@ -13,17 +13,20 @@ Example usage:
     $ ls
     Procfile  requirements.txt  web.py
 
-    $ heroku create --stack cedar --buildpack git://github.com/heroku/heroku-buildpack-python.git
+    $ heroku create --stack cedar --buildpack git://github.com/migurski/heroku-buildpack-python.git
 
     $ git push heroku master
     ...
     -----> Fetching custom git buildpack... done
     -----> Python app detected
-    -----> No runtime.txt provided; assuming python-2.7.3.
-    -----> Preparing Python runtime (python-2.7.3)
-    -----> Installing Distribute (0.6.34)
-    -----> Installing Pip (1.2.1)
-    -----> Installing dependencies using Pip (1.2.1)
+    -----> No runtime.txt provided; assuming python-2.7.4.
+    -----> Using Python runtime (python-2.7.4)
+    -----> Fetching and installing Proj 4.8.0
+           Proj cached in /app/tmp/repo.git/.cache/proj-4.8.0
+    -----> Fetching and installing GDAL 1.10.1
+           GDAL cached in /app/tmp/repo.git/.cache/gdal-1.10.1
+    -----> Copying precompiled libraries from /app/tmp/repo.git/.cache to /app
+    -----> Installing dependencies using Pip (1.3.1)
            Downloading/unpacking Flask==0.7.2 (from -r requirements.txt (line 1))
            Downloading/unpacking Werkzeug>=0.6.1 (from Flask==0.7.2->-r requirements.txt (line 1))
            Downloading/unpacking Jinja2>=2.4 (from Flask==0.7.2->-r requirements.txt (line 1))
@@ -33,7 +36,7 @@ Example usage:
 
 You can also add it to upcoming builds of an existing application:
 
-    $ heroku config:add BUILDPACK_URL=git://github.com/heroku/heroku-buildpack-python.git
+    $ heroku config:add BUILDPACK_URL=git://github.com/migurski/heroku-buildpack-python.git
 
 The buildpack will detect your app as Python if it has the file `requirements.txt` in the root. 
 
