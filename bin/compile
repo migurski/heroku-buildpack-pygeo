@@ -55,18 +55,6 @@ export BUILD_DIR CACHE_DIR BIN_DIR PROFILE_PATH
 # Syntax sugar.
 source $BIN_DIR/utils
 
-# Install Proj
-if [ ! -d $CACHE_DIR/proj ]; then
-  puts-step "Fetching and installing Proj 4.8.0"
-  curl -o proj.tgz -L http://s3.amazonaws.com/fuckfuckfuck/proj4-4.8.0-heroku.tar.gz >/dev/null 2>&1
-  echo "Installing ..." | indent
-  tar -C $CACHE_DIR -xzvf proj.tgz >/dev/null 2>&1
-  rm proj.tgz
-  echo "Proj installed in $CACHE_DIR" | indent
-fi
-
-cp -r $CACHE_DIR/proj ./proj
-
 # Directory Hacks for path consistiency.
 APP_DIR='/app'
 TMP_APP_DIR=$CACHE_DIR/tmp_app_dir
@@ -216,6 +204,18 @@ if (grep -Fiq "hg+" requirements.txt) then
     /app/.heroku/python/bin/pip install --use-mirrors mercurial | cleanup | indent
   bpwatch stop mercurial_install
 fi
+
+# Install Proj
+if [ ! -d $CACHE_DIR/proj ]; then
+  puts-step "Fetching and installing Proj 4.8.0"
+  curl -o proj.tgz -L http://s3.amazonaws.com/fuckfuckfuck/proj4-4.8.0-heroku.tar.gz >/dev/null 2>&1
+  echo "Installing ..." | indent
+  tar -C $CACHE_DIR -xzvf proj.tgz >/dev/null 2>&1
+  rm proj.tgz
+  echo "Proj installed in $CACHE_DIR" | indent
+fi
+
+cp -r $CACHE_DIR/proj /app/proj
 
 # Install dependencies with Pip.
 puts-step "Installing dependencies using Pip ($PIP_VERSION)"
