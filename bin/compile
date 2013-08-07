@@ -206,28 +206,26 @@ if (grep -Fiq "hg+" requirements.txt) then
 fi
 
 # Install Proj
-if [ ! -d $CACHE_DIR/proj ]; then
+if [ ! -d $CACHE_DIR/proj-4.8.0 ]; then
   puts-step "Fetching and installing Proj 4.8.0"
-  curl -o proj.tgz -L http://s3.amazonaws.com/fuckfuckfuck/proj4-4.8.0-heroku.tar.gz >/dev/null 2>&1
-  echo "Installing ..." | indent
+  curl -o proj.tgz -L http://s3.amazonaws.com/fuckfuckfuck/proj-4.8.0-heroku.tar.gz >/dev/null 2>&1
   tar -C $CACHE_DIR -xzvf proj.tgz >/dev/null 2>&1
   rm proj.tgz
-  echo "Proj installed in $CACHE_DIR" | indent
+  echo "Proj cached in $CACHE_DIR/proj-4.8.0" | indent
 fi
 
 # Install GDAL
-if [ ! -d $CACHE_DIR/gdal ]; then
+if [ ! -d $CACHE_DIR/gdal-1.10.1 ]; then
   puts-step "Fetching and installing GDAL 1.10.1"
   curl -o gdal.tgz -L http://s3.amazonaws.com/fuckfuckfuck/gdal-1.10.1-heroku.tar.gz >/dev/null 2>&1
-  echo "Installing ..." | indent
   tar -C $CACHE_DIR -xzvf gdal.tgz >/dev/null 2>&1
   rm gdal.tgz
-  echo "GDAL installed in $CACHE_DIR" | indent
+  echo "GDAL cached in $CACHE_DIR/gdal-1.10.1" | indent
 fi
 
-puts-step "Copying libraries from $CACHE_DIR to /app"
-cp -r $CACHE_DIR/proj /app/proj
-cp -r $CACHE_DIR/gdal /app/gdal
+puts-step "Copying precompiled libraries from $CACHE_DIR to /app"
+cp -r $CACHE_DIR/proj-4.8.0 /app/proj
+cp -r $CACHE_DIR/gdal-1.10.1 /app/gdal
 
 # Install dependencies with Pip.
 puts-step "Installing dependencies using Pip ($PIP_VERSION)"
@@ -254,10 +252,10 @@ set-env PATH '$HOME/.heroku/python/bin:$PATH'
 set-env PYTHONUNBUFFERED true
 set-env PYTHONHOME /app/.heroku/python
 set-default-env LIBRARY_PATH /app/.heroku/vendor/lib
-set-default-env LD_LIBRARY_PATH /app/.heroku/vendor/lib
+set-default-env LD_LIBRARY_PATH /app/.heroku/vendor/lib:/app/proj/lib:/app/gdal/lib
 set-default-env LANG en_US.UTF-8
 set-default-env PYTHONHASHSEED random
-set-default-env PYTHONPATH /app/
+set-default-env PYTHONPATH /app/:/app/gdal/lib/python2.7/site-packages
 
 
 # Experimental post_compile hook.
