@@ -17,6 +17,16 @@ ROOT_DIR=$(dirname $BIN_DIR)
 BUILD_DIR=$1
 CACHE_DIR=$2
 
+# Install Proj.4
+if [ ! -d $CACHE_DIR/proj ]; then
+  puts-step "Fetching and installing Proj.4 4.8.0"
+  curl -o proj.tgz -L http://s3.amazonaws.com/fuckfuckfuck/proj4-4.8.0-heroku.tar.gz >/dev/null 2>&1
+  puts-step "Installing ..."
+  tar -C $CACHE_DIR -xzvf proj.tgz >/dev/null 2>&1
+  rm proj.tgz
+  puts-step "Proj.4 installed in $CACHE_DIR"
+fi
+
 CACHED_DIRS=".heroku"
 
 # Static configurations for virtualenv caches.
