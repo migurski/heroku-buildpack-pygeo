@@ -285,3 +285,20 @@ bpwatch stop anvil_appdir_commit
 bpwatch stop compile
 
 puts-step "DATASOURCE_URL: $DATASOURCE_URL"
+
+python <<EXTRACT
+
+from os import environ
+from zipfile import ZipFile
+from hashlib import md5
+
+hash = md5(environ['DATASOURCE_URL']).hexdigest()
+
+with ZipFile('shp.zip', 'r') as zip:
+    for name in zip.namelist():
+        if name[-4:] in ('.dbf', '.prj', '.shp', '.shx'):
+            print name, '-->', hash + name[-4:]
+            with open(hash + name[-4:], 'w') as out:
+                out.write(zip.read(name))
+
+EXTRACT
