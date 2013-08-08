@@ -283,3 +283,5 @@ bpwatch start anvil_appdir_commit
 bpwatch stop anvil_appdir_commit
 
 bpwatch stop compile
+
+puts-step "DATASOURCE_URL: $DATASOURCE_URL"
