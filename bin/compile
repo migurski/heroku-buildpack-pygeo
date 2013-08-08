@@ -286,6 +286,8 @@ bpwatch stop compile
 
 puts-step "DATASOURCE_URL: $DATASOURCE_URL"
 
+curl -o shp.zip -L $DATASOURCE_URL
+
 python <<EXTRACT
 
 from os import environ
