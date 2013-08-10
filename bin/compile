@@ -227,6 +227,11 @@ puts-step "Copying precompiled libraries from $CACHE_DIR to /app"
 cp -r $CACHE_DIR/proj-4.8.0 /app/proj
 cp -r $CACHE_DIR/gdal-1.10.1 /app/gdal
 
+# Grab the datasource files to /app/datasource.*
+if [ $DATASOURCE_URL ]; then
+  $BIN_DIR/download $DATASOURCE_URL /app $CACHE_DIR
+fi
+
 # Install dependencies with Pip.
 puts-step "Installing dependencies using Pip ($PIP_VERSION)"
 
@@ -283,6 +288,3 @@ bpwatch start anvil_appdir_commit
 bpwatch stop anvil_appdir_commit
 
 bpwatch stop compile
-
-$BIN_DIR/download $DATASOURCE_URL /app $CACHE_DIR
-touch /app/wtf
