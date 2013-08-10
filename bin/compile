@@ -286,25 +286,4 @@ bpwatch stop compile
 
 puts-step "DATASOURCE_URL: $DATASOURCE_URL"
 
-if [ ! -f $CACHE_DIR/shp.zip ]; then
-  curl -o $CACHE_DIR/shp.zip -L $DATASOURCE_URL
-fi
-
-python <<EXTRACT
-
-from os import environ
-from zipfile import ZipFile
-from hashlib import md5
-
-build = environ['BUILD_DIR']
-cache = environ['CACHE_DIR']
-hash = md5(environ['DATASOURCE_URL']).hexdigest()
-
-with ZipFile(cache + '/shp.zip', 'r') as zip:
-    for name in zip.namelist():
-        if name[-4:] in ('.dbf', '.prj', '.shp', '.shx'):
-            with open('%s/%s.%s' % (build, hash, name[-3:]), 'w') as out:
-                print name, '-->', out.name
-                out.write(zip.read(name))
-
-EXTRACT
+$BIN_DIR/download $DATASOURCE_URL $BUILD_DIR $CACHE_DIR
