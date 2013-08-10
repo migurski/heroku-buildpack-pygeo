@@ -205,6 +205,25 @@ if (grep -Fiq "hg+" requirements.txt) then
   bpwatch stop mercurial_install
 fi
 
+# Set up a directory for pre-compiled binaries
+mkdir -p $BUILD_DIR/vendor
+
+#
+# Install GEOS
+#
+puts-step "Fetching and installing GEOS 3.3.8"
+
+if [ -d $CACHE_DIR/vendor/geos ]; then
+  echo "GEOS found in $CACHE_DIR/vendor/geos" | indent
+else
+  curl -o geos.tgz -L http://s3.amazonaws.com/fuckfuckfuck/geos-3.3.8-heroku.tar.gz >/dev/null 2>&1
+  tar -C $CACHE_DIR -xzvf geos.tgz >/dev/null 2>&1
+  rm geos.tgz
+  echo "GEOS cached in $CACHE_DIR/vendor/geos" | indent
+fi
+
+cp -r $CACHE_DIR/vendor/geos /app/vendor
+
 # Install Proj
 if [ ! -d $CACHE_DIR/proj-4.8.0 ]; then
   puts-step "Fetching and installing Proj 4.8.0"
@@ -235,6 +254,10 @@ fi
 # Install dependencies with Pip.
 puts-step "Installing dependencies using Pip ($PIP_VERSION)"
 
+
+env CPPFLAGS=`vendor/geos/bin/geos-config --cflags` \
+    LIBRARY_PATH=$LIBRARY_PATH:/app/vendor/geos/lib \
+    /app/.heroku/python/bin/pip install --use-mirrors | cleanup | indent
 
 [ ! "$FRESH_PYTHON" ] && bpwatch start pip_install
 [ "$FRESH_PYTHON" ] && bpwatch start pip_install_first
