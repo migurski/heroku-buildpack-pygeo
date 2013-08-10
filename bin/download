@@ -7,6 +7,8 @@ from subprocess import Popen
 from zipfile import ZipFile
 from hashlib import md5
 
+print '-----> Preparing datasource'
+
 try:
     url, build, cache = argv[1:]
 except ValueError:
@@ -16,6 +18,7 @@ except ValueError:
 file = '%s/%s.zip' % (cache, md5(url).hexdigest())
 
 if not exists(file):
+    print '       Downloading', url, 'to', file
     curl = Popen(('curl', '-o', file, '-L', url))
     curl.wait()
 
@@ -23,5 +26,5 @@ with ZipFile(file, 'r') as zip:
     for name in zip.namelist():
         if name[-4:] in ('.dbf', '.prj', '.shp', '.shx'):
             with open('%s/datasource.%s' % (build, name[-3:]), 'w') as out:
-                print name, '-->', out.name
+                print '      ', name, '-->', out.name
                 out.write(zip.read(name))

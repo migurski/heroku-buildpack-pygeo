@@ -284,6 +284,5 @@ bpwatch stop anvil_appdir_commit
 
 bpwatch stop compile
 
-puts-step "DATASOURCE_URL: $DATASOURCE_URL"
-
-$BIN_DIR/download $DATASOURCE_URL $BUILD_DIR $CACHE_DIR
+$BIN_DIR/download $DATASOURCE_URL /app $CACHE_DIR
+touch /app/wtf
