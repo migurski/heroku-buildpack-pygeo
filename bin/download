@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 from sys import argv
-from os import environ
-from os.path import exists
+from os.path import exists, splitext
+from os import write, close
+from tempfile import mkdtemp
 from subprocess import Popen
 from zipfile import ZipFile
 from hashlib import md5
@@ -22,9 +23,26 @@ if not exists(file):
     curl = Popen(('curl', '-o', file, '-L', url))
     curl.wait()
 
+src_name = None
+tmp_dir = mkdtemp()
+
 with ZipFile(file, 'r') as zip:
-    for name in zip.namelist():
-        if name[-4:] in ('.dbf', '.prj', '.shp', '.shx'):
-            with open('%s/datasource.%s' % (build, name[-3:]), 'w') as out:
-                print '      ', name, '-->', out.name
-                out.write(zip.read(name))
+    for name in sorted(zip.namelist()):
+        base, ext = splitext(name)
+    
+        if ext not in ('.dbf', '.prj', '.shp', '.shx', '.json'):
+            continue
+        
+        tmp_path = tmp_dir + '/datasource' + ext
+        print '      ', name, '-->', tmp_path
+        
+        with open(tmp_path, 'w') as tmp:
+            tmp.write(zip.read(name))
+            
+        if ext in ('.shp', '.json'):
+            src_name = tmp_path
+
+if src_name:
+    print ('/app/gdal/bin/ogr2ogr', build + '/datasource.shp', src_name)
+    ogr2ogr = Popen(('/app/gdal/bin/ogr2ogr', build + '/datasource.shp', src_name))
+    ogr2ogr.wait()
