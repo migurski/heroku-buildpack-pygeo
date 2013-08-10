@@ -22,6 +22,9 @@ if not exists(file):
     print '       Downloading', url, 'to', file
     curl = Popen(('curl', '-o', file, '-L', url))
     curl.wait()
+    
+    if curl.returncode:
+        raise RuntimeError('curl returned %d' % curl.returncode)
 
 src_name = None
 tmp_dir = mkdtemp()
@@ -42,7 +45,13 @@ with ZipFile(file, 'r') as zip:
         if ext in ('.shp', '.json'):
             src_name = tmp_path
 
-if src_name:
-    print ('/app/gdal/bin/ogr2ogr', build + '/datasource.shp', src_name)
-    ogr2ogr = Popen(('/app/gdal/bin/ogr2ogr', build + '/datasource.shp', src_name))
-    ogr2ogr.wait()
+if not src_name:
+    raise RuntimeError('No .shp or .json found in %s' % file)
+
+print '      ', src_name, '-->', build + '/datasource.shp'
+print '       (ogr2ogr might take a long time)'
+ogr2ogr = Popen(('/app/gdal/bin/ogr2ogr', build + '/datasource.shp', src_name))
+ogr2ogr.wait()
+
+if ogr2ogr.returncode:
+    raise RuntimeError('ogr2ogr returned %d' % ogr2ogr.returncode)
