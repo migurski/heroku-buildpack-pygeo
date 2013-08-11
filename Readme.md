@@ -3,7 +3,13 @@ Heroku buildpack: Py+Geo
 
 This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpacks) for Python apps, powered by [pip](http://www.pip-installer.org/).
 
-It has been modified from the [Heroku original](https://github.com/heroku/heroku-buildpack-python) to add precompiled binaries for [Proj.4](http://trac.osgeo.org/proj/) and [GDAL](http://trac.osgeo.org/gdal/).
+It has been modified from the [Heroku original](https://github.com/heroku/heroku-buildpack-python) to add precompiled binaries for [GEOS](http://trac.osgeo.org/geos/), [Proj.4](http://trac.osgeo.org/proj/) and [GDAL](http://trac.osgeo.org/gdal/).
+It will also fetch and convert a single zipped OGR datasource to `/app/datasource.shp` when provided with the environment variable `DATASOURCE_URL`.
+Note that [user-env-compile](https://devcenter.heroku.com/articles/labs-user-env-compile) from Heroku Labs must be enabled for this to work:
+
+    heroku apps:create -b https://github.com/migurski/heroku-buildpack-pygeo
+    heroku config:set DATASOURCE_URL=https://data.sfgov.org/download/3vyz-qy9p/ZIP
+    heroku labs:enable user-env-compile
 
 Usage
 -----
