@@ -2,11 +2,11 @@
 
 from sys import argv
 from os.path import exists, splitext
-from os import write, close
 from tempfile import mkdtemp
 from subprocess import Popen
 from zipfile import ZipFile
 from hashlib import md5
+from shutil import copy
 
 print '-----> Preparing datasource'
 
@@ -48,10 +48,18 @@ with ZipFile(file, 'r') as zip:
 if not src_name:
     raise RuntimeError('No .shp or .json found in %s' % file)
 
-print '      ', src_name, '-->', build + '/datasource.shp'
-print '       (ogr2ogr might take a long time)'
-ogr2ogr = Popen(('ogr2ogr', build + '/datasource.shp', src_name))
-ogr2ogr.wait()
+if exists(cache + '/datasource.shp'):
+    print '       Found', cache + '/datasource.shp'
+else:
+    print '      ', src_name, '-->', cache + '/datasource.shp'
+    print '       (ogr2ogr might take a long time)'
+    ogr2ogr = Popen(('ogr2ogr', cache + '/datasource.shp', src_name))
+    ogr2ogr.wait()
+    
+    if ogr2ogr.returncode:
+        raise RuntimeError('ogr2ogr returned %d' % ogr2ogr.returncode)
 
-if ogr2ogr.returncode:
-    raise RuntimeError('ogr2ogr returned %d' % ogr2ogr.returncode)
+copy(cache + '/datasource.dbf', build)
+copy(cache + '/datasource.prj', build)
+copy(cache + '/datasource.shp', build)
+copy(cache + '/datasource.shx', build)
