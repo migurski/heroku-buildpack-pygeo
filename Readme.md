@@ -5,7 +5,7 @@ This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpacks) fo
 
 It has been modified from the [Heroku original](https://github.com/heroku/heroku-buildpack-python) to add precompiled binaries for [GEOS](http://trac.osgeo.org/geos/), [PROJ.4](http://trac.osgeo.org/proj/), [GDAL](http://trac.osgeo.org/gdal/), and [Shapely](http://toblerity.org/shapely/).
 
-Optionally, it will also fetch and convert a single zipped OGR datasource to `/app/datasource.shp` when provided with the environment variable `DATASOURCE_URL`.
+Optionally, it will also fetch and convert a single zipped OGR datasource to `/app/datasource.shp` when provided with the environment variable `ZIPPED_DATA_URL`.
 Note that [user-env-compile](https://devcenter.heroku.com/articles/labs-user-env-compile) from Heroku Labs must be enabled for this to work:
 
 Usage
@@ -20,7 +20,7 @@ Example usage:
     
 The following two steps are optional, and will create `/app/datasource.shp` based on the remote file.
 
-    $ heroku config:set DATASOURCE_URL=http://fuckfuckfuck.s3.amazonaws.com/data-sfgov-org-parcels.zip
+    $ heroku config:set ZIPPED_DATA_URL=http://fuckfuckfuck.s3.amazonaws.com/data-sfgov-org-parcels.zip
     $ heroku labs:enable user-env-compile
 
 Make it so.
